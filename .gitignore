@@ -9,4 +9,6 @@ dist/
 docs/_build/
 *.profile
 *.so
-
+.idea/
+venv/
+pyParticleEst.egg-info/

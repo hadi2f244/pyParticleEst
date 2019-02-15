@@ -92,10 +92,9 @@ class Simulator():
                 - R: the number of iterations to run the Markov chain for each
                   time step
         """
-        resamplings = 0
+        resamplings = 0 #Number of resampling until each time
 
         # Initialise a particle filter with our particle approximation of the initial state,
-        # set the resampling threshold to 0.67 (effective particles / total particles )
         self.pt = ParticleTrajectory(self.model, num_part, res, filter=filter,
                                      filter_options=filter_options)
 

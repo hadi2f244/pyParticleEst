@@ -8,6 +8,10 @@ import math
 import copy
 
 def sample(w, n):
+    # todo: Add other resampling algorithms
+    ### https://nbviewer.jupyter.org/github/rlabbe/Kalman-and-Bayesian-Filters-in-Python/blob/master/12-Particle-Filters.ipynb#Resampling-Methods
+    ### https://github.com/rlabbe/Kalman-and-Bayesian-Filters-in-Python
+
     """
     Return n random indices, where the probability if index
     is given by w[i].
@@ -80,13 +84,16 @@ class ParticleFilter(object):
             ancestors = pa.resample(self.model, pa.num)
             resampled = True
         else:
+            # resampling doesn't occur, so ancestors are [1,...,pa.num]
             ancestors = numpy.arange(pa.num, dtype=int)
 
 
+        # First Step: Change ParticleApproximation according Motion model
         pa = self.update(traj=traj, ancestors=ancestors,
                          uvec=uvec, yvec=yvec,
                          tvec=tvec, cur_ind=cur_ind,
                          pa=pa, inplace=True,)
+        # Second Step: Change ParticleApproximation according Observation model
         if (yvec is not None):
             pa = self.measure(traj=traj, ancestors=ancestors, pa=pa,
                               #There is no 'u' for last step yet
@@ -259,27 +266,27 @@ class SIR(object):
 
         return (pa, resampled, ancestors)
 
-    def update(self, traj, ancestors, uvec, yvec, tvec, cur_ind, pa, inplace=True):
-        """
-        Update particle approximation of x_t to x_{t+1} using u as input.
-
-        Args:
-         - traj (array-like): approximation for time t
-         - ancestors (array-like): indices which to propagate estimates from
-         - uvec (array-like): input signals
-         - yvec (array-like): measurements
-         - tvec (array-like): time stamps
-         - cur_ind (int): index of current time-step in (uvec, uvec, tvec)
-         - inplace (bool): if True the particles are updated then returned,
-           otherwise a new ParticleApproximation is first created
-           leaving the original one intact
-
-        Returns:
-            ParticleApproximation for time t+1
-        """
-
-
-        return pa
+    # def update(self, traj, ancestors, uvec, yvec, tvec, cur_ind, pa, inplace=True):
+    #     """
+    #     Update particle approximation of x_t to x_{t+1} using u as input.
+    #
+    #     Args:
+    #      - traj (array-like): approximation for time t
+    #      - ancestors (array-like): indices which to propagate estimates from
+    #      - uvec (array-like): input signals
+    #      - yvec (array-like): measurements
+    #      - tvec (array-like): time stamps
+    #      - cur_ind (int): index of current time-step in (uvec, uvec, tvec)
+    #      - inplace (bool): if True the particles are updated then returned,
+    #        otherwise a new ParticleApproximation is first created
+    #        leaving the original one intact
+    #
+    #     Returns:
+    #         ParticleApproximation for time t+1
+    #     """
+    #
+    #
+    #     return pa
 
 
     def measure(self, traj, ancestors, pa, uvec, yvec, tvec, cur_ind, inplace=True):
@@ -812,7 +819,7 @@ class TrajectoryStep(object):
      - pa (ParticleAppromixation): particle approximation
      - u (array-like): input signals at time t
        (u[t] contains the input for takin x[t] to x[t+1])
-     - y (array-like): measurements at time t
+     - y (array-like): measurements at time t  Todo: Why 'y','u' and 't' don't set and used?!
        (y[t] is the measurment of x[t])
      - t (float): time stamp for time t
      - ancestors (array-like): indices for each particles ancestor
@@ -830,10 +837,10 @@ class ParticleTrajectory(object):
     Args:
      - model (ParticleFiltering): object describing the model specfics
      - N (int): Number of particles to use in the filter
-     - resample (float): Ratio of number of effective particle of total number
+     - resample (float): Ratio of number of effective particle of total number (default=0.67)
        of particles that will trigger resampling
      - t0 (float): time stamp for intial time
-     - filter (string): Which filtering algorihms to use
+     - filter (string): Which filtering algorihms to use (default='PF')
      - filter_options (dictionary): options passed to the filter
      - T (int): Length of dataset (for non-online computations), pre-allocates
        space for input/output/time vectors
@@ -1075,6 +1082,7 @@ class ParticleApproximation(object):
         if (logw is not None):
             self.w = numpy.copy(logw)
         else:
+            # default weight of each particle is -log(num)
             self.w = -math.log(num) * numpy.ones(num)
 
         self.num = num
@@ -1123,6 +1131,7 @@ class ParticleApproximation(object):
         return new_ind
 
     def sample(self):
+        # todo: what is difference between this function and sample function at first of this file ?!
         """
         Draw one particle at random with probability corresponding to its weight
 

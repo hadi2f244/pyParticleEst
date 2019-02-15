@@ -71,7 +71,8 @@ if __name__ == '__main__':
 
     model = Model(P0, Q, R)
     sim = simulator.Simulator(model, u=None, y=y)
-    sim.simulate(num, num, smoother='ancestor')
+    numOfResampling = sim.simulate(num, num, smoother='ancestor')
+    print("Number of resampling that occured:",numOfResampling)
 
     plt.plot(range(steps + 1), x, 'r-')
     plt.plot(range(1, steps + 1), y, 'bx')

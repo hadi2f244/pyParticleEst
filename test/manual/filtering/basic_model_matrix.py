@@ -74,7 +74,8 @@ if __name__ == '__main__':
     print("Number of resampling that occured:",numOfResampling)
 
     plt.plot(x[:,0], x[:,1], 'r-') # Real data
-    plt.plot(y[:,0], y[:,1], 'x--') # Measured data
+    # plt.plot(y[:,0], y[:,1], 'x--') # Measured data
+    plt.plot(y[:,0], y[:,1], 'x') # Measured data
 
     fvals = sim.get_filtered_mean()
     plt.plot(fvals[:,0], fvals[:,1], 'g-') # Filtered data
